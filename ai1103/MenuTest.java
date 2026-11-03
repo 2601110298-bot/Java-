@@ -12,11 +12,24 @@ public class MenuTest extends JFrame {
     JTextArea textArea = new JTextArea();
     JFileChooser fileChooser = new JFileChooser();
     JFrame frame;
+    String[] iconFileNames = {"new", "open", "close", "white", "blue", "magenta"};
+    Color[] colorNames = {Color.WHITE, Color.BLUE, Color.MAGENTA, Color.WHITE, Color.BLUE, Color.MAGENTA};
+    JButton[] btns = new JButton[6];
+
     public MenuTest(){
         frame = this;
         JScrollPane scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
         add(scrollPane);
+
+        JToolBar toolBar = new JToolBar();
+        add("North", toolBar);
+
+        for (int i = 0; i < btns.length; i++) {
+            btns[i] = new JButton(new ImageIcon("toolbar/" + iconFileNames[i] + ".png"));
+            btns[i].addActionListener(btnListener);
+            toolBar.add(btns[i]);
+        }
+
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         JMenu fileMenu = new JMenu("File");
@@ -49,6 +62,29 @@ public class MenuTest extends JFrame {
         SetFrame.setFrame(this, "메뉴만들기", 500, 500);
     }
 
+    ActionListener btnListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton ebtn = (JButton) e.getSource();
+            File selectedFile;
+            if (ebtn == btns[0]){
+                textArea.setText("");
+            }else if (ebtn == btns[1]){
+                fileChooser.showOpenDialog(frame);
+                selectedFile = fileChooser.getSelectedFile();
+                 textArea.setText(readFile(selectedFile));
+            }else if (ebtn == btns[2]){
+                System.exit(0);
+            }
+
+            for (int i = 0; i < colorNames.length; i++) {
+                if (ebtn == btns[i+3]){
+                    textArea.setBackground(colorNames[i]);
+                }
+            }
+        }
+    };
+
     ActionListener fileListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -60,7 +96,7 @@ public class MenuTest extends JFrame {
                 case "Open":
                     fileChooser.showOpenDialog(frame);
                     selectedFile = fileChooser.getSelectedFile();
-                    textArea.setText(selectedFile.getAbsolutePath());
+                    textArea.setText(readFile(selectedFile));
                     break;
                 case "Close":
                     System.exit(0);
